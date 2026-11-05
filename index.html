@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ELBRAD – Fahrradverleih Hamburg (Variante B)</title>
+<meta name="description" content="ELBRAD ist ein fiktiver Fahrradverleih in Hamburg. Studienprojekt der Kunstschule Wandsbek, Variante B.">
+<!--
+  ELBRAD · Variante B (Industrial)
+  Studienprojekt der Kunstschule Wandsbek. Keine offizielle Seite.
+
+  Bilder: assets/img/ (citybike, ebike, tourenrad, saddle, handlebar, waterfront .jpg).
+  Herkunft und Rechte: docs/BILDQUELLEN.md.
+  Skyline: eigene Vektorgrafik (inline SVG unten).
+  Schrift: Plus Jakarta Sans (SIL Open Font License 1.1), lokal unter assets/fonts/.
+  Wetter: Open-Meteo (CC BY 4.0). Gleiche Logik wie in Variante A (Repository elbrad-variante-a), hier in src/shared/weather.js,
+  beim Build (build.py) in das Skript am Ende dieser Datei eingesetzt (Funktion loadWeather()).
+-->
+<style>
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:400;font-display:swap;src:url("assets/fonts/plus-jakarta-sans-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:500;font-display:swap;src:url("assets/fonts/plus-jakarta-sans-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:700;font-display:swap;src:url("assets/fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:800;font-display:swap;src:url("assets/fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2")}
+
+/* Layout: dark industrial frame. Silver split hero, hairline weather strip,
+   three product columns, two-row editorial mosaic with 2px seams, steps strip, CTA with skyline. */
+:root{
+  --bg:#111214;        /* page */
+  --panel:#25272B;     /* content panels */
+  --hero:#D5D6D7;      /* silver hero */
+  --studio:#CFD0D1;    /* product photo ground */
+  --text:#F5F5F3;
+  --text-2:#BFC1C5;
+  --ink:#17181A;
+  --ink-2:#3B3D41;     /* secondary text on silver */
+  --accent:#D6E879;    /* pale lime, key calls to action only */
+  --line:#3A3D42;      /* hairlines */
+
+  --sans:"Plus Jakarta Sans","Helvetica Neue",Arial,sans-serif;
+  --max:1400px;
+  --gutter-l:max(16px, env(safe-area-inset-left, 0px), 3vw);
+  --gutter-r:max(16px, env(safe-area-inset-right, 0px), 3vw);
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:1.0625rem;line-height:1.55;overflow-x:hidden}
+img{display:block;max-width:100%;height:auto}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em;line-height:1.05;text-wrap:balance}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+a{color:inherit}
+[hidden]{display:none!important}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+:focus{outline:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.on-light :focus-visible{outline-color:var(--ink)}
+
+.skip-link{position:absolute;left:16px;top:-100px;z-index:100;padding:.75rem 1rem;background:var(--accent);color:var(--ink);font-weight:700;text-decoration:none;border-radius:999px}
+.skip-link:focus{top:12px}
+.skip-link:focus-visible{outline-color:var(--text)}
+
+.wrap{max-width:var(--max);margin-inline:auto;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
+section[id]{scroll-margin-top:8px}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:.7rem 1.6rem;border:1.5px solid transparent;border-radius:999px;font:inherit;font-weight:700;font-size:1.05rem;line-height:1.1;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn-accent{background:var(--accent);color:var(--ink)}
+.btn-accent:hover{background:#E3F09A}
+.btn-dark{background:var(--ink);color:var(--text)}
+.btn-dark:hover{background:#2E3034}
+.btn-outline{background:transparent;color:var(--text);border-color:var(--text-2);min-height:44px;padding:.55rem 1.25rem;font-size:.95rem}
+.btn-outline:hover{border-color:var(--text);background:#303237}
+@media (prefers-reduced-motion:no-preference){.btn{transition:background-color .15s ease,border-color .15s ease}}
+
+/* ---------- Header ---------- */
+.site-header{background:var(--bg);border-bottom:1px solid var(--line)}
+.header-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1.5rem;padding-block:.7rem}
+.wordmark{display:inline-flex;align-items:center;min-height:44px;font-weight:800;font-size:1.85rem;letter-spacing:.01em;line-height:1;text-decoration:none;order:1}
+.nav{order:3;flex-basis:100%}
+.nav ul{display:flex;flex-wrap:wrap;gap:0 1.75rem}
+.nav a{display:inline-flex;align-items:center;min-height:44px;font-weight:500;font-size:1.05rem;text-decoration:none;color:var(--text);border-bottom:2px solid transparent}
+.nav a:hover{border-bottom-color:var(--text-2)}
+.header-row .btn-accent{order:2;min-height:44px;padding:.55rem 1.25rem}
+@media (min-width:760px){
+  .header-row{flex-wrap:nowrap;padding-block:.9rem}
+  .wordmark{order:0;margin-right:2.5rem}
+  .nav{order:0;flex-basis:auto;margin-right:auto}
+  .nav ul{gap:2.5rem}
+  .header-row .btn-accent{order:0}
+}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--hero);color:var(--ink)}
+.hero-grid{display:grid;gap:1.5rem;padding-block:2.4rem 1.6rem}
+.hero-text{display:flex;flex-direction:column;align-items:flex-start;gap:1.1rem;min-width:0}
+.eyebrow{font-weight:700;font-size:.9rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.hero h1{font-size:clamp(2.6rem,1.6rem + 4.6vw,5.4rem);line-height:.98;letter-spacing:-.035em}
+.hero-sub{font-size:clamp(1.15rem,1rem + .7vw,1.6rem);font-weight:500;color:var(--ink-2);margin-top:-.2rem}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:.8rem;margin-top:.6rem}
+.hero .btn-dark{font-size:1.1rem;padding-inline:1.8rem}
+.hero-price{font-size:1.2rem;font-weight:500}
+.hero-figure{margin:0;min-width:0}
+.hero-figure img{width:100%;aspect-ratio:3/2;object-fit:contain}
+@media (min-width:900px){
+  .hero-grid{grid-template-columns:minmax(0,4.2fr) minmax(0,5.8fr);align-items:center;gap:2rem;padding-block:3.2rem 2.4rem}
+  .hero-text{padding-bottom:1rem}
+  .hero-figure{margin-right:calc(-1 * var(--gutter-r) + 8px)}
+}
+
+/* ---------- Weather strip ---------- */
+.weather{background:var(--bg);border-bottom:1px solid var(--line)}
+.weather-grid{display:grid;gap:1rem 0;padding-block:1.4rem 1.1rem}
+.weather-head h2{font-size:1.6rem;letter-spacing:-.02em}
+.weather-head p{color:var(--text-2);font-size:.95rem;margin-top:.25rem}
+.weather-head h2:focus-visible{outline-color:var(--accent)}
+.weather-body{display:grid;min-width:0}
+.weather-status{font-weight:700;font-size:1.15rem;align-self:center;padding-block:.4rem}
+.weather-status.is-error{color:var(--accent)}
+.weather-error{padding-top:.6rem}
+.weather-stats{display:grid}
+.stat{display:grid;grid-template-columns:2.25rem minmax(0,1fr);grid-template-areas:"icon value" "icon label";column-gap:.9rem;row-gap:.1rem;align-items:center;padding-block:.75rem;border-top:1px solid var(--line);min-width:0}
+.stat:first-child{border-top:0}
+.stat svg{grid-area:icon;width:2rem;height:2rem;color:var(--text-2)}
+.stat-value{grid-area:value;font-weight:700;font-size:1.6rem;line-height:1.15;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat-value.is-na{font-size:1.05rem;font-weight:600;color:var(--text-2);white-space:normal}
+.stat-label{grid-area:label;color:var(--text-2);font-size:.9rem;line-height:1.35;overflow-wrap:anywhere}
+.stat-hour{display:block}
+.weather-meta{display:flex;flex-wrap:wrap;gap:.25rem 1.25rem;justify-content:space-between;padding-top:.8rem;border-top:1px solid var(--line);font-size:.875rem;color:var(--text-2)}
+.weather-meta strong{color:var(--text);font-weight:600}
+.weather-meta a{color:var(--text);text-underline-offset:.2em}
+.weather-meta a:hover{color:var(--accent)}
+@media (min-width:700px){
+  .weather-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .stat{border-top:0;border-left:1px solid var(--line);padding:.2rem 1.5rem}
+}
+@media (min-width:1080px){
+  .weather-grid{grid-template-columns:minmax(12rem,.9fr) minmax(0,3fr);align-items:center}
+  .weather-head{padding-right:1.5rem}
+  .weather-body{border-left:1px solid var(--line);padding-left:0}
+  .stat:first-child{border-left:0}
+  .weather-status{padding-left:1.5rem}
+  .weather-error{padding-left:1.5rem}
+  .weather-meta{grid-column:1/-1}
+}
+
+/* ---------- Bikes ---------- */
+.bikes{padding-block:2.6rem 2rem}
+.section-title{font-size:clamp(1.9rem,1.4rem + 2vw,2.9rem)}
+.bike-list{display:grid;gap:8px;margin-top:1.5rem}
+.bike{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line)}
+.bike-photo{margin:0;background:var(--studio)}
+.bike-photo img{width:100%;aspect-ratio:3/2;object-fit:contain}
+.bike-info{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem 1rem;padding:1rem 1.1rem 1.1rem}
+.bike h3{font-size:1.55rem}
+.bike .price{color:var(--text-2);font-size:1.05rem;margin-top:.2rem}
+@media (min-width:760px){.bike-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* ---------- Editorial mosaic ---------- */
+.mosaic{border-block:1px solid var(--line);background:var(--line);display:grid;gap:2px}
+.mosaic-row{display:grid;gap:2px}
+.tile{margin:0;background:var(--panel);min-width:0;overflow:hidden}
+.tile img{width:100%;height:100%;aspect-ratio:4/3;object-fit:cover}
+.tile--bike{background:var(--studio)}
+.tile--bike img{object-fit:contain;aspect-ratio:3/2}
+.tile-text{display:flex;flex-direction:column;justify-content:center;gap:.75rem;padding:2rem var(--gutter-r) 2rem var(--gutter-l)}
+.tile-text h2{font-size:clamp(1.9rem,1.5rem + 1.5vw,2.75rem)}
+.tile-text p{color:var(--text-2);font-size:1.1rem;max-width:22ch}
+@media (min-width:900px){
+  .mosaic-row{height:clamp(270px,24vw,380px)}
+  .mosaic-row--1{grid-template-columns:30fr 23fr 47fr}
+  .mosaic-row--2{grid-template-columns:23fr 26fr 23fr 28fr}
+  .tile img,.tile--bike img{aspect-ratio:auto}
+  .tile-text{padding:2rem 1.75rem}
+  .tile--saddle img{object-position:40% 50%}
+}
+
+/* ---------- Steps ---------- */
+.steps{border-bottom:1px solid var(--line)}
+.steps-grid{display:grid;gap:1.2rem;padding-block:2rem}
+.steps h2{font-size:clamp(1.5rem,1.2rem + 1.1vw,2rem)}
+.step-list{display:grid;gap:.25rem}
+.step{display:flex;align-items:center;gap:1rem;padding-block:.6rem;font-weight:600;font-size:1.1rem}
+.step svg{width:2.25rem;height:2.25rem;flex:none;color:var(--text)}
+.step-num{color:var(--text-2);font-variant-numeric:tabular-nums;margin-right:.35rem}
+@media (min-width:900px){
+  .steps-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,2.4fr);align-items:center;padding-block:1.5rem}
+  .step-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+  .step{justify-content:center;border-left:1px solid var(--line);padding:.5rem 1rem}
+}
+
+/* ---------- Final CTA ---------- */
+.cta{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.cta-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem;padding-block:2.6rem 7.5rem}
+.cta h2{font-size:clamp(2rem,1.4rem + 2.6vw,3.4rem)}
+.skyline{position:absolute;right:0;bottom:0;width:min(100%,720px);height:auto;color:#3F4247}
+@media (min-width:900px){
+  .cta-inner{padding-block:3rem}
+  .skyline{width:min(62%,880px)}
+}
+
+/* ---------- Footer ---------- */
+.site-footer .wrap{padding-block:1.2rem;font-size:.875rem;color:var(--text-2)}
+
+/* ---------- Booking dialog ---------- */
+.booking{width:min(32rem,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--line);background:var(--panel);color:var(--text)}
+.booking::backdrop{background:rgba(8,8,10,.75)}
+.booking-inner{display:grid;gap:1.1rem;padding:1.5rem 1.4rem 1.4rem}
+.booking-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.booking h2{font-size:1.9rem}
+.icon-btn{display:grid;place-items:center;flex:none;width:44px;height:44px;margin:-.35rem -.35rem 0 0;border:1.5px solid var(--text-2);border-radius:999px;background:transparent;color:var(--text);cursor:pointer}
+.icon-btn:hover{border-color:var(--text);background:#303237}
+.icon-btn svg{width:1.1rem;height:1.1rem}
+.notice{padding:.8rem 1rem;border-left:4px solid var(--accent);background:#1C1D20;font-weight:600;line-height:1.45}
+.booking fieldset{margin:0;padding:0;border:0;display:grid;gap:.5rem}
+.booking legend{padding:0;margin-bottom:.6rem;font-weight:600;color:var(--text-2)}
+.choice{display:flex;align-items:center;gap:.85rem;min-height:52px;padding:.65rem 1rem;border:1.5px solid var(--line);border-radius:12px;cursor:pointer}
+.choice:hover{border-color:var(--text-2)}
+.choice:has(input:checked){border-color:var(--accent);background:#2F3227}
+.choice input{width:1.2rem;height:1.2rem;margin:0;flex:none;accent-color:var(--accent)}
+.choice-name{font-weight:700;font-size:1.1rem}
+.choice-price{margin-left:auto;color:var(--text-2);white-space:nowrap}
+.booking-selected{color:var(--text-2);font-size:.95rem;min-height:1.5em}
+.booking-actions{display:flex;justify-content:flex-end}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="wordmark" href="#main" aria-label="ELBRAD, zum Seitenanfang">ELBRAD</a>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <ul>
+        <li><a href="#raeder">Räder</a></li>
+        <li><a href="#ablauf">So geht’s</a></li>
+        <li><a href="#preise">Preise</a></li>
+      </ul>
+    </nav>
+    <button type="button" class="btn btn-accent" data-open-booking aria-haspopup="dialog">Rad buchen</button>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<section class="hero on-light" aria-labelledby="hero-title">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <p class="eyebrow">Fahrradverleih Hamburg</p>
+      <h1 id="hero-title">Hamburg auf zwei Rädern.</h1>
+      <p class="hero-sub">Dein Rad. Dein Tempo. Deine Stadt.</p>
+      <div class="hero-actions">
+        <button type="button" class="btn btn-dark" data-open-booking aria-haspopup="dialog">Jetzt Rad buchen</button>
+        <p class="hero-price">Ab 12&nbsp;€ / Tag</p>
+      </div>
+    </div>
+    <figure class="hero-figure">
+      <img src="assets/img/citybike.jpg"
+           width="1600" height="1067" fetchpriority="high"
+           alt="Graphitgraues Citybike mit tiefem Einstieg, Drahtkorb vorn, Gepäckträger und Schutzblechen, seitlich auf hellgrauem Studioboden.">
+    </figure>
+  </div>
+</section>
+
+<section class="weather" id="wetter" aria-labelledby="weather-title">
+  <div class="wrap weather-grid">
+    <div class="weather-head">
+      <h2 id="weather-title" tabindex="-1">Hamburg heute</h2>
+      <p>Live-Daten</p>
+    </div>
+
+    <div class="weather-body">
+      <p class="weather-status" id="weather-status" role="status" aria-live="polite">Wetterdaten werden geladen …</p>
+      <div class="weather-error" id="weather-error" hidden>
+        <button type="button" class="btn btn-accent" id="weather-retry">Erneut versuchen</button>
+      </div>
+      <noscript><p class="weather-status">Für die Wetterdaten wird JavaScript benötigt.</p></noscript>
+
+      <ul class="weather-stats" id="weather-stats" hidden>
+        <li class="stat">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M13 5.5a3 3 0 0 1 6 0v12.2a6 6 0 1 1-6 0Z"/><path d="M16 12v9"/><circle cx="16" cy="22.5" r="2"/></svg>
+          <p class="stat-label">Temperatur</p>
+          <p class="stat-value" id="w-temp">–</p>
+        </li>
+        <li class="stat">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 22.5h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.4 13.6a4.5 4.5 0 0 0 .1 8.9Z"/><path d="M12 26.5l-1 2M17 26.5l-1 2M22 26.5l-1 2" stroke-linecap="round"/></svg>
+          <p class="stat-label">Niederschlags&shy;wahrscheinlichkeit<span class="stat-hour" id="w-precip-hour"></span></p>
+          <p class="stat-value" id="w-precip">–</p>
+        </li>
+        <li class="stat">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 12h15.5a3.5 3.5 0 1 0-3.5-3.5"/><path d="M4 18h21a3.5 3.5 0 1 1-3.5 3.5"/><path d="M4 24h9"/></svg>
+          <p class="stat-label">Wind</p>
+          <p class="stat-value" id="w-wind">–</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="weather-meta">
+      <p>Stand: <strong id="w-time">–</strong> (Berliner Zeit)</p>
+      <p><a href="https://open-meteo.com/" target="_blank" rel="noopener">Wetterdaten: Open-Meteo</a>
+         · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="bikes" id="raeder" aria-labelledby="bikes-title">
+  <div class="wrap">
+    <h2 class="section-title" id="bikes-title">Dein Rad für die Stadt</h2>
+    <ul class="bike-list" id="preise" aria-label="Räder und Preise">
+      <li class="bike">
+        <figure class="bike-photo">
+          <img src="assets/img/citybike.jpg" width="1600" height="1067" loading="lazy" alt="Graphitgraues Citybike mit Drahtkorb vorn und Gepäckträger.">
+        </figure>
+        <div class="bike-info">
+          <div>
+            <h3 id="bike-city-name">Citybike</h3>
+            <p class="price">12&nbsp;€ / Tag</p>
+          </div>
+          <button type="button" class="btn btn-outline" data-open-booking data-bike="Citybike" aria-haspopup="dialog">Rad wählen<span class="sr-only">: Citybike</span></button>
+        </div>
+      </li>
+      <li class="bike">
+        <figure class="bike-photo">
+          <img src="assets/img/ebike.jpg" width="1600" height="1067" loading="lazy" alt="Graphitgraues E-Bike mit Akku am Unterrohr, Gepäckträger und Schutzblechen.">
+        </figure>
+        <div class="bike-info">
+          <div>
+            <h3>E-Bike</h3>
+            <p class="price">25&nbsp;€ / Tag</p>
+          </div>
+          <button type="button" class="btn btn-outline" data-open-booking data-bike="E-Bike" aria-haspopup="dialog">Rad wählen<span class="sr-only">: E-Bike</span></button>
+        </div>
+      </li>
+      <li class="bike">
+        <figure class="bike-photo">
+          <img src="assets/img/tourenrad.jpg" width="1600" height="1067" loading="lazy" alt="Schwarzgraues Tourenrad mit Diamantrahmen, Kettenschaltung und Gepäckträger.">
+        </figure>
+        <div class="bike-info">
+          <div>
+            <h3>Tourenrad</h3>
+            <p class="price">18&nbsp;€ / Tag</p>
+          </div>
+          <button type="button" class="btn btn-outline" data-open-booking data-bike="Tourenrad" aria-haspopup="dialog">Rad wählen<span class="sr-only">: Tourenrad</span></button>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="mosaic" aria-label="Dein Rad. Dein Tempo. Deine Stadt.">
+  <div class="mosaic-row mosaic-row--1">
+    <figure class="tile tile--saddle">
+      <img src="assets/img/saddle.jpg" width="1200" height="900" loading="lazy"
+           alt="Nahaufnahme eines schwarzen Fahrradsattels mit Federn vor dunklem Hintergrund.">
+    </figure>
+    <div class="tile tile-text">
+      <h2>Dein Rad.</h2>
+      <p>Zuverlässig, komfortabel und bereit für Hamburg.</p>
+    </div>
+    <figure class="tile tile--bike">
+      <img src="assets/img/citybike.jpg" width="1600" height="1067" loading="lazy"
+           alt="Das graphitgraue Citybike mit Korb, vollständig von der Seite.">
+    </figure>
+  </div>
+  <div class="mosaic-row mosaic-row--2">
+    <div class="tile tile-text">
+      <h2>Dein Tempo.</h2>
+      <p>Flexibel unterwegs – so, wie es in deinen Tag passt.</p>
+    </div>
+    <figure class="tile">
+      <img src="assets/img/handlebar.jpg" width="1200" height="900" loading="lazy"
+           alt="Nahaufnahme von Lenkergriff, Bremshebel und Frontlicht eines graphitgrauen Fahrrads.">
+    </figure>
+    <div class="tile tile-text">
+      <h2>Deine Stadt.</h2>
+      <p>Hamburg auf eigene Weise entdecken.</p>
+    </div>
+    <figure class="tile">
+      <img src="assets/img/waterfront.jpg" width="1200" height="900" loading="lazy"
+           alt="Eine Person fährt mit einem Citybike an der Hamburger Elbpromenade entlang, im Hintergrund Hafenkräne und die Elbphilharmonie.">
+    </figure>
+  </div>
+</section>
+
+<section class="steps" id="ablauf" aria-labelledby="steps-title">
+  <div class="wrap steps-grid">
+    <h2 id="steps-title">In drei Schritten unterwegs</h2>
+    <ol class="step-list">
+      <li class="step">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="20.5" r="5"/><circle cx="24.5" cy="20.5" r="5"/><path d="M7.5 20.5 12 11h9.5l3 9.5M12 11l4.5 9.5h3l2-9.5M10.5 8h4M19.5 8h3"/></svg>
+        <span><span class="step-num">01</span>Rad wählen</span>
+      </li>
+      <li class="step">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M16 28.5s-8.5-8.2-8.5-15a8.5 8.5 0 0 1 17 0c0 6.8-8.5 15-8.5 15Z"/><circle cx="16" cy="13.5" r="3.2"/></svg>
+        <span><span class="step-num">02</span>Abholen</span>
+      </li>
+      <li class="step">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="16" r="12"/><path d="m10.5 16.5 3.8 3.8 7.4-8"/></svg>
+        <span><span class="step-num">03</span>Losfahren</span>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="cta" aria-labelledby="cta-title">
+  <div class="wrap cta-inner">
+    <h2 id="cta-title">Hamburg wartet auf dich.</h2>
+    <button type="button" class="btn btn-accent" data-open-booking aria-haspopup="dialog">Jetzt Rad buchen</button>
+  </div>
+  <svg class="skyline" viewBox="0 0 880 170" fill="currentColor" aria-hidden="true" focusable="false">
+    <!-- eigene, vereinfachte Hamburg-Silhouette: Kräne, Speicher, St. Michaelis, Elbphilharmonie -->
+    <rect x="0" y="166" width="880" height="4"/>
+    <path d="M30 166v-38h26v38z M60 166v-26h18v26z"/>
+    <path d="M92 166V70h3v-8h34v4H99v100z M95 70l30-4" fill="none" stroke="currentColor" stroke-width="3"/>
+    <path d="M120 66v10h-6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M150 166V82h3v-6h30v4h-26v86z" fill="none" stroke="currentColor" stroke-width="3"/>
+    <path d="M196 166v-22h30v22z M230 166v-30h22v30z M256 166v-18h40v18z"/>
+    <path d="M300 166v-44l10-10 10 10v44z M322 166v-44l10-10 10 10v44z M344 166v-44l10-10 10 10v44z"/>
+    <path d="M378 166v-34h28v34z"/>
+    <path d="M416 166v-60h22v60z M420 106v-20h14v20z M423 86v-14h8v14z M425 72l2-40 2 40z"/>
+    <path d="M444 166v-26h26v26z M474 166v-38h20v38z M498 166v-24h34v24z"/>
+    <path d="M540 166v-54h150v54z"/>
+    <path d="M540 112l10-34 18 16 20-26 22 22 26-30 20 26 18-12 16 38z"/>
+    <path d="M700 166v-28h24v28z M728 166v-20h40v20z"/>
+    <path d="M780 166V74h3v-6h34v4h-30v94z M817 72v10h-5" fill="none" stroke="currentColor" stroke-width="3"/>
+    <path d="M830 166v-24h40v24z"/>
+  </svg>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Studienprojekt der Kunstschule Wandsbek, keine offizielle Seite</p>
+  </div>
+</footer>
+
+<dialog class="booking" id="booking" aria-labelledby="booking-title" aria-describedby="booking-note">
+  <div class="booking-inner">
+    <div class="booking-top">
+      <h2 id="booking-title">Rad buchen</h2>
+      <button type="button" class="icon-btn" data-close-booking aria-label="Dialog schließen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <p class="notice" id="booking-note">Dies ist ein Studienprojekt. Es wird keine echte Buchung vorgenommen.</p>
+    <form id="booking-form" novalidate>
+      <fieldset>
+        <legend>Welches Rad möchtest du?</legend>
+        <label class="choice"><input type="radio" name="bike" id="bike-city" value="Citybike" data-price="12&nbsp;€ / Tag"><span class="choice-name">Citybike</span><span class="choice-price">12&nbsp;€ / Tag</span></label>
+        <label class="choice"><input type="radio" name="bike" id="bike-ebike" value="E-Bike" data-price="25&nbsp;€ / Tag"><span class="choice-name">E-Bike</span><span class="choice-price">25&nbsp;€ / Tag</span></label>
+        <label class="choice"><input type="radio" name="bike" id="bike-tour" value="Tourenrad" data-price="18&nbsp;€ / Tag"><span class="choice-name">Tourenrad</span><span class="choice-price">18&nbsp;€ / Tag</span></label>
+      </fieldset>
+    </form>
+    <p class="booking-selected" id="booking-selected" aria-live="polite"></p>
+    <div class="booking-actions">
+      <button type="button" class="btn btn-outline" data-close-booking>Schließen</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= Wetter: Open-Meteo =================
+     Der Abruf passiert in loadWeather(). Er läuft bei jedem Seitenaufruf
+     und bei "Erneut versuchen". Es gibt keine Beispiel- oder Ersatzwerte. */
+  var WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=53.55&longitude=9.99&current=temperature_2m,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FBerlin";
+  var TIMEOUT_MS = 10000;
+  var NA = "Nicht verfügbar";
+
+  var el = {
+    status: document.getElementById("weather-status"),
+    error: document.getElementById("weather-error"),
+    retry: document.getElementById("weather-retry"),
+    stats: document.getElementById("weather-stats"),
+    heading: document.getElementById("weather-title"),
+    temp: document.getElementById("w-temp"),
+    precip: document.getElementById("w-precip"),
+    precipHour: document.getElementById("w-precip-hour"),
+    wind: document.getElementById("w-wind"),
+    time: document.getElementById("w-time")
+  };
+
+  var fmtOneDecimal = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  var fmtInteger = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
+  var NBSP = "\u00A0";
+
+  function isNumber(v) { return typeof v === "number" && Number.isFinite(v); }
+
+  // Rundet und verhindert "-0,0" bei Werten knapp unter null.
+  function formatOneDecimal(v) {
+    var r = Math.round(v * 10) / 10;
+    if (r === 0) r = 0;
+    return fmtOneDecimal.format(r);
+  }
+
+  // "2026-11-05T15:45" -> {date:"05.11.2026", hm:"15:45", hourKey:"2026-11-05T15"}
+  // Open-Meteo liefert die Zeit mit timezone=Europe/Berlin bereits in Berliner Ortszeit.
+  function parseLocalTime(s) {
+    if (typeof s !== "string") return null;
+    var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2})?$/.exec(s);
+    if (!m) return null;
+    return { date: m[3] + "." + m[2] + "." + m[1], hm: m[4] + ":" + m[5], hour: m[4], hourKey: m[1] + "-" + m[2] + "-" + m[3] + "T" + m[4] };
+  }
+
+  function unitOk(units, key, expected) {
+    // Fehlt die Einheitenangabe, gilt die Standardeinheit der API (°C, km/h, %).
+    if (!units || typeof units !== "object" || !(key in units)) return true;
+    return units[key] === expected;
+  }
+
+  function setValue(node, text) {
+    node.textContent = text;
+    node.classList.toggle("is-na", text === NA);
+  }
+
+  function setState(state) {
+    var loading = state === "loading", error = state === "error", ok = state === "ok";
+    el.stats.hidden = !ok;
+    el.error.hidden = !error;
+    el.status.classList.toggle("sr-only", ok);
+    el.status.classList.toggle("is-error", error);
+    el.status.parentNode.setAttribute("aria-busy", loading ? "true" : "false");
+    if (loading) el.status.textContent = "Wetterdaten werden geladen …";
+    if (error) el.status.textContent = "Wetterdaten gerade nicht erreichbar.";
+    if (!ok) el.time.textContent = loading ? "–" : NA;
+  }
+
+  function render(data) {
+    var current = data && typeof data === "object" ? data.current : null;
+    var units = data && data.current_units;
+    var hourly = data && data.hourly;
+    var hourlyUnits = data && data.hourly_units;
+    var used = {};
+
+    // Temperatur
+    var t = current && current.temperature_2m;
+    var tempText = isNumber(t) && unitOk(units, "temperature_2m", "°C") ? formatOneDecimal(t) + NBSP + "°C" : NA;
+    setValue(el.temp, tempText);
+    used.temperature_2m = tempText === NA ? null : t;
+
+    // Wind
+    var w = current && current.wind_speed_10m;
+    var windText = isNumber(w) && w >= 0 && unitOk(units, "wind_speed_10m", "km/h") ? formatOneDecimal(w) + NBSP + "km/h" : NA;
+    setValue(el.wind, windText);
+    used.wind_speed_10m = windText === NA ? null : w;
+
+    // Stand
+    var ct = parseLocalTime(current && current.time);
+    var tzOk = !data || data.timezone === undefined || data.timezone === "Europe/Berlin";
+    el.time.textContent = ct && tzOk ? ct.date + ", " + ct.hm + NBSP + "Uhr" : NA;
+    used.time = ct && tzOk ? current.time : null;
+
+    // Niederschlag: Eintrag in hourly.time mit gleichem Datum und gleicher Stunde wie current.time
+    var precipText = NA, hourText = "";
+    var times = hourly && hourly.time, probs = hourly && hourly.precipitation_probability;
+    if (ct && Array.isArray(times) && Array.isArray(probs) && times.length === probs.length && unitOk(hourlyUnits, "precipitation_probability", "%")) {
+      var idx = -1;
+      for (var i = 0; i < times.length; i++) {
+        var ht = parseLocalTime(times[i]);
+        if (ht && ht.hourKey === ct.hourKey) { idx = i; break; }
+      }
+      if (idx !== -1) {
+        var p = probs[idx];
+        hourText = "Stundenwert " + ct.hour + ":00" + NBSP + "Uhr";
+        if (isNumber(p) && p >= 0 && p <= 100) {
+          precipText = fmtInteger.format(p) + NBSP + "%";
+          used.precipitation_probability = { index: idx, time: times[idx], value: p };
+        }
+      }
+    }
+    setValue(el.precip, precipText);
+    el.precipHour.textContent = hourText;
+    if (!used.precipitation_probability) used.precipitation_probability = null;
+
+    setState("ok");
+    el.status.textContent = "Wetterdaten geladen. Temperatur " + tempText + ", Niederschlagswahrscheinlichkeit " + precipText +
+      (hourText ? " (" + hourText + ")" : "") + ", Wind " + windText + ". Stand " + el.time.textContent + ".";
+
+    // Für das Protokoll: welche Werte aus der Antwort angezeigt werden.
+    if (window.console && console.info) console.info("[ELBRAD] Open-Meteo-Werte angezeigt:", used);
+  }
+
+  var requestId = 0;
+  function loadWeather() {
+    var id = ++requestId;
+    setState("loading");
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = setTimeout(function () { if (controller) controller.abort(); }, TIMEOUT_MS);
+
+    fetch(WEATHER_URL, { cache: "no-store", signal: controller ? controller.signal : undefined })
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json().catch(function () { throw new Error("Antwort ist kein gültiges JSON"); });
+      })
+      .then(function (data) {
+        if (id !== requestId) return;
+        render(data);
+      })
+      .catch(function (err) {
+        if (id !== requestId) return;
+        var reason = err && err.name === "AbortError" ? "Zeitüberschreitung nach " + TIMEOUT_MS / 1000 + " s" : (err && err.message) || String(err);
+        if (window.console && console.warn) console.warn("[ELBRAD] Wetterdaten nicht geladen:", reason);
+        setState("error");
+      })
+      .finally(function () { clearTimeout(timer); });
+  }
+
+  el.retry.addEventListener("click", function () {
+    el.heading.focus();
+    loadWeather();
+  });
+
+  loadWeather();
+
+
+  /* ================= Buchungs-Demo =================
+     Öffnet den Dialog, wählt bei "Rad wählen" das passende Rad vor,
+     hält den Fokus im Dialog und gibt ihn beim Schließen zurück.
+     Es werden keine Daten gesendet oder gespeichert. */
+  var dialog = document.getElementById("booking");
+  var form = document.getElementById("booking-form");
+  var selected = document.getElementById("booking-selected");
+  var radios = form.querySelectorAll("input[name=bike]");
+  var lastTrigger = null;
+
+  function describeSelection() {
+    var choice = form.querySelector("input[name=bike]:checked");
+    selected.textContent = choice
+      ? "Ausgewählt: " + choice.value + ", " + choice.getAttribute("data-price") + ". Keine Buchung, nur Demo."
+      : "Noch kein Rad ausgewählt.";
+  }
+
+  function openBooking(trigger) {
+    lastTrigger = trigger;
+    var bike = trigger.getAttribute("data-bike");
+    radios.forEach(function (r) { r.checked = bike ? r.value === bike : r.checked; });
+    describeSelection();
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+    (form.querySelector("input:checked") || radios[0]).focus();
+  }
+
+  function closeBooking() {
+    if (typeof dialog.close === "function") dialog.close();
+    else { dialog.removeAttribute("open"); dialog.dispatchEvent(new Event("close")); }
+  }
+
+  document.querySelectorAll("[data-open-booking]").forEach(function (btn) {
+    btn.addEventListener("click", function () { openBooking(btn); });
+  });
+  document.querySelectorAll("[data-close-booking]").forEach(function (btn) {
+    btn.addEventListener("click", closeBooking);
+  });
+  radios.forEach(function (r) { r.addEventListener("change", describeSelection); });
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+
+  // Klick auf den abgedunkelten Hintergrund schließt den Dialog.
+  dialog.addEventListener("click", function (e) { if (e.target === dialog) closeBooking(); });
+
+  // Fokus im Dialog halten: Tab springt vom letzten zum ersten Element und umgekehrt.
+  dialog.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    var first = dialog.querySelector(".icon-btn");
+    var closers = dialog.querySelectorAll("[data-close-booking]");
+    var last = closers[closers.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  dialog.addEventListener("close", function () { if (lastTrigger) lastTrigger.focus(); });
+})();
+</script>
+</body>
+</html>
